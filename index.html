@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>URL Explainer</title>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>URL Explainer</h1>
+			<input id="url" value="enter your URL">
+			<button type="button" onclick="myFunction()">Explain</button>
+			<p></p>
+		</div>
+	</div>
+	</div>
+
+    <script src="URI.js"></script>
+
+    <script>
+	
+    // does all things to explain URL
+    function myFunction() {
+        $('[data-toggle="popover"]').popover();
+        $("p").empty();
+        var url = String(document.getElementById("url").value);
+        parseURL(url);
+        detectRedirect(url);
+        findSiteTitle(url);
+        //isSafe(url);
+	}
+
+    // detects any shortened/redirected URLs
+    function detectRedirect(site) {
+        var proxyurl = "getRedirect.php?url=" + site;
+        $.ajax({
+              url: proxyurl,
+              async: true,
+              success: function (response) {
+                  $( "p" ).append("<br>This url redirects to  " + response);
+              },
+              error: function () {
+                  $('p').append('<br>Bummer: there was an error detecting redirect!');
+              }
+          });
+    }
+
+    // site title
+    function findSiteTitle(site) {
+        var proxyurl = "get_external_content.php?url=" + site;
+          $.ajax({
+            url: proxyurl,
+            async: true,
+            success: function(response) {
+                $( "p" ).append("<br>Site Title: " + response);
+            },   
+            error: function(e) {
+                $( "p" ).append( "<br>site title cannot be found :(" );
+            }
+          });
+    }
+
+    // uses URI.js to parse URL into components, explain each part?
+    function parseURL(url) {
+        var uri = new URI(url);
+
+        if (uri == null) {
+            $( "p" ).append( "<strong>FAIL</strong>" );
+        }
+        
+        else {
+            uri.normalize();
+            if (uri.domain()) {
+                $( "p" ).append("<br>This URL goes to: <b>" + uri.domain() + "</b><br>");
+            }
+            if (uri.protocol()) {
+                $( "p" ).append("<br>Protocol: " + uri.protocol());
+                /*if (uri.protocol().indexOf("s") != -1) {
+                    $( "p" ).append(" <a href='#' data-toggle='popover' data-trigger='hover' title='HTTPS' data-content='requires secure connection'><span class='glyphicon glyphicon-ok-sign' aria-hidden='true'></span></a>");
+                }*/
+            } 
+            if (uri.userinfo()) {
+                $( "p" ).append("<br>Userinfo: " + uri.userinfo());
+            }
+            if (uri.subdomain()) {
+                $( "p" ).append("<br>Subdomain: " + uri.subdomain());
+            }
+            if (uri.domain()) {
+                $( "p" ).append("<br>Domain: " + uri.domain());
+            }
+            if (uri.port()) {
+                $( "p" ).append("<br>Port: " + uri.port());
+            }
+            if (uri.path()) {
+                $( "p" ).append("<br>Path: " + uri.path());
+            }
+            if (uri.query()) {
+                $( "p" ).append("<br>Query: " + uri.query());
+            }
+            if (uri.fragment()) {
+                $( "p" ).append("<br>Fragment: " + uri.fragment());
+            }
+            $( "p" ).append("<br>");
+        }
+
+        function isSafe(url) {
+
+        }
+        
+        /*<table class = "table">
+        <tr>
+            <th>Protocol:</th>
+            <td>result.protocol</td>
+        </tr>
+        <tr>
+            <th>Username:</th>
+            <td>result.username</td>
+        </tr>
+        <tr>
+            <th>Password:</th>
+            <td>result.password</td>
+        </tr>
+        <tr>
+            <th>Hostname:</th>
+            <td>result.hostname</td>
+        </tr>
+        <tr>
+            <th>Port:</th>
+            <td>result.port</td>
+        </tr>
+        <tr>
+            <th>Path:</th>
+            <td>result.path</td>
+        </tr>
+        <tr>
+            <th>Query:</th>
+            <td>result.query</td>
+        </tr>
+        <tr>
+            <th>Fragment:</th>
+            <td>result.fragment</td>
+        </tr>
+        <tr>
+            <th rowspan="2">Telephone:</th>
+            <td>555 77 854</td>
+        </tr>
+        <tr>
+            <td>555 77 855</td>
+        </tr>
+        </table>*/
+    }
+
+	</script>
+
+
+</body>
+</html>
